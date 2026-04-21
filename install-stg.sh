@@ -98,8 +98,12 @@ main() {
         elif [ -f "${HOME}/.profile" ]; then rc="${HOME}/.profile"
         fi
         if [ -n "$rc" ]; then
-            echo "export PATH=\"${INSTALL_DIR}:\$PATH\"" >> "$rc"
-            echo "Added ${INSTALL_DIR} to PATH in ${rc}"
+            if grep -qF "${INSTALL_DIR}" "$rc" 2>/dev/null; then
+                echo "Note: ${INSTALL_DIR} は既に ${rc} に登録済みです"
+            else
+                echo "export PATH=\"${INSTALL_DIR}:\$PATH\"" >> "$rc"
+                echo "Added ${INSTALL_DIR} to PATH in ${rc}"
+            fi
             echo "次のいずれかで反映: source ${rc}  または新しいターミナルを開く"
         fi
     fi
