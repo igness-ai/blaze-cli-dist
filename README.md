@@ -5,29 +5,19 @@ Salesforce AI DevOps Agent の CLI 配信チャネル。バイナリと install 
 
 ## インストール
 
-### macOS (production)
+### macOS (Apple Silicon)
 ```bash
 curl -fsSL https://cli.igness.ai/install.sh | bash
 ```
 
-### Windows (production)
+### Windows
 ```powershell
 irm https://cli.igness.ai/install.ps1 | iex
 ```
 
-### macOS (staging, 社内向け)
-```bash
-curl -fsSL https://cli.igness.ai/install-stg.sh | bash
-```
-
-### Windows (staging, 社内向け)
-```powershell
-irm https://cli.igness.ai/install-stg.ps1 | iex
-```
-
 ## 動作要件
 
-- **macOS**: Apple Silicon または Intel
+- **macOS**: Apple Silicon
 - **Windows**: Windows 10/11、Windows Terminal 推奨 (旧 conhost ではフォント表示が崩れます)
 - **Nerd Font 推奨**: TUI のアイコン表示用 (Cascadia Code PL 等)
 
@@ -35,8 +25,7 @@ irm https://cli.igness.ai/install-stg.ps1 | iex
 
 インストール済みのバイナリから:
 ```bash
-blaze update            # production
-blaze-stg update         # staging
+blaze update
 ```
 
 ---
