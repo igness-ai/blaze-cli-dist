@@ -73,7 +73,9 @@ main() {
         echo "error: archive contains unsafe paths" >&2
         exit 1
     fi
-    tar xzf "$archive" --no-same-owner --no-overwrite-dir
+    # macOS の bsdtar は GNU tar 専用の --no-same-owner / --no-overwrite-dir を受けない。
+    # zip-slip は tar tzf の事前検査、改竄は SHA-256 で防御済みなので追加オプション不要。
+    tar xzf "$archive"
     mkdir -p "$INSTALL_DIR"
 
     # 旧バイナリ退避 → 新バイナリ配置 → 退避を削除
