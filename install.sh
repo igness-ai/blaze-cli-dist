@@ -45,8 +45,8 @@ main() {
     version="$(get_latest_version)"
     [ -n "$version" ] || { echo "error: version 取得失敗" >&2; exit 1; }
 
-    asset_base="blaze-v${version}-${platform}"
-    url="https://github.com/${REPO}/releases/download/v${version}/${asset_base}.tar.gz"
+    archive="blaze-v${version}-${platform}.tar.gz"
+    url="https://github.com/${REPO}/releases/download/v${version}/${archive}"
     checksum_url="${url}.sha256"
 
     echo "Installing Blaze CLI v${version} (${platform})..."
@@ -54,25 +54,26 @@ main() {
     tmpdir="$(mktemp -d)"
     trap 'rm -rf "$tmpdir"' EXIT
 
-    curl -fsSL --proto '=https' --tlsv1.2 "$url" -o "${tmpdir}/blaze.tar.gz"
-    curl -fsSL --proto '=https' --tlsv1.2 "$checksum_url" -o "${tmpdir}/blaze.sha256"
+    # CI 生成の本来のファイル名のまま保存する (sha256 ファイル内の記載と一致させるため)
+    curl -fsSL --proto '=https' --tlsv1.2 "$url" -o "${tmpdir}/${archive}"
+    curl -fsSL --proto '=https' --tlsv1.2 "$checksum_url" -o "${tmpdir}/${archive}.sha256"
 
     cd "$tmpdir"
     if command -v shasum >/dev/null 2>&1; then
-        shasum -a 256 -c blaze.sha256
+        shasum -a 256 -c "${archive}.sha256"
     elif command -v sha256sum >/dev/null 2>&1; then
-        sha256sum -c blaze.sha256
+        sha256sum -c "${archive}.sha256"
     else
         echo "error: shasum/sha256sum が利用不可。整合性検証ができません" >&2
         exit 1
     fi
 
     # zip-slip 対策
-    if tar tzf blaze.tar.gz | grep -E '^/|(^|/)\.\.(/|$)' >/dev/null; then
+    if tar tzf "$archive" | grep -E '^/|(^|/)\.\.(/|$)' >/dev/null; then
         echo "error: archive contains unsafe paths" >&2
         exit 1
     fi
-    tar xzf blaze.tar.gz --no-same-owner --no-overwrite-dir
+    tar xzf "$archive" --no-same-owner --no-overwrite-dir
     mkdir -p "$INSTALL_DIR"
 
     # 旧バイナリ退避 → 新バイナリ配置 → 退避を削除
