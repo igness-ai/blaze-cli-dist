@@ -40,8 +40,11 @@ get_latest_staging_tag() {
         | head -n1
 }
 
+# trap EXIT は main() の local スコープ外で発火するため、tmpdir はグローバルに持つ
+tmpdir=""
+
 main() {
-    local platform tag asset_base url checksum_url tmpdir
+    local platform tag archive url checksum_url
     platform="$(detect_platform)"
     tag="$(get_latest_staging_tag)"
     [ -n "$tag" ] || { echo "error: staging tag 取得失敗" >&2; exit 1; }

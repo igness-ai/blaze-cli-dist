@@ -39,8 +39,11 @@ get_latest_version() {
         | head -n1
 }
 
+# trap EXIT は main() の local スコープ外で発火するため、tmpdir はグローバルに持つ
+tmpdir=""
+
 main() {
-    local platform version asset_base url checksum_url tmpdir
+    local platform version archive url checksum_url
     platform="$(detect_platform)"
     version="$(get_latest_version)"
     [ -n "$version" ] || { echo "error: version 取得失敗" >&2; exit 1; }
