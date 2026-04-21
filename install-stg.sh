@@ -16,7 +16,13 @@ detect_platform() {
         *) echo "error: unsupported OS: $os" >&2; exit 1 ;;
     esac
     case "$arch" in
-        x86_64|amd64) arch_triple="x86_64" ;;
+        x86_64|amd64)
+            if [ "$os_triple" = "apple-darwin" ]; then
+                echo "error: Intel Mac はサポート対象外です。Apple Silicon Mac をご使用ください。" >&2
+                exit 1
+            fi
+            arch_triple="x86_64"
+            ;;
         arm64|aarch64) arch_triple="aarch64" ;;
         *) echo "error: unsupported architecture: $arch" >&2; exit 1 ;;
     esac
