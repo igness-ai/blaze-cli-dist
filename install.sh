@@ -118,12 +118,20 @@ main() {
     fi
 }
 
-# OS の言語設定 (LC_ALL → LANG) から日本語か判定
+# 日本語 UI を出すか判定。macOS では AppleLocale (システム言語) を優先、
+# LC_ALL を明示 override 用途、LANG を最終 fallback とする。
+# macOS Terminal.app の LANG は歴史的に en_US.UTF-8 固定なため、LANG だけでは誤判定になる。
 _is_ja() {
-    case "${LC_ALL:-${LANG:-}}" in
-        ja*) return 0 ;;
-        *) return 1 ;;
-    esac
+    if [ -n "${LC_ALL:-}" ]; then
+        case "$LC_ALL" in ja*) return 0 ;; *) return 1 ;; esac
+    fi
+    if command -v defaults >/dev/null 2>&1; then
+        case "$(defaults read -g AppleLocale 2>/dev/null)" in
+            ja*) return 0 ;;
+            [a-z]*) return 1 ;;
+        esac
+    fi
+    case "${LANG:-}" in ja*) return 0 ;; *) return 1 ;; esac
 }
 
 main "$@"
