@@ -100,17 +100,30 @@ main() {
         fi
         if [ -n "$rc" ]; then
             if grep -qF "${INSTALL_DIR}" "$rc" 2>/dev/null; then
-                echo "Note: ${INSTALL_DIR} は既に ${rc} に登録済みです"
+                _is_ja && echo "Note: ${INSTALL_DIR} は既に ${rc} に登録済みです" \
+                       || echo "Note: ${INSTALL_DIR} is already configured in ${rc}"
             else
                 echo "export PATH=\"${INSTALL_DIR}:\$PATH\"" >> "$rc"
-                echo "Added ${INSTALL_DIR} to PATH in ${rc}"
+                _is_ja && echo "${INSTALL_DIR} を ${rc} に追加しました" \
+                       || echo "Added ${INSTALL_DIR} to PATH in ${rc}"
             fi
-            echo "次のいずれかで反映: source ${rc}  または新しいターミナルを開く"
         fi
     fi
 
     echo
-    echo "Run '${BINARY_NAME}' to get started."
+    if _is_ja; then
+        echo "新規ターミナルを開いて '${BINARY_NAME}' コマンドを実行してください"
+    else
+        echo "Open a new terminal and run the '${BINARY_NAME}' command"
+    fi
+}
+
+# OS の言語設定 (LC_ALL → LANG) から日本語か判定
+_is_ja() {
+    case "${LC_ALL:-${LANG:-}}" in
+        ja*) return 0 ;;
+        *) return 1 ;;
+    esac
 }
 
 main "$@"

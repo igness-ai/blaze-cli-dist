@@ -61,13 +61,22 @@ try {
 
     # User PATH 追加
     $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+    $isJa = (Get-Culture).Name -like 'ja*'
     if ($userPath -notlike "*${installDir}*") {
         [Environment]::SetEnvironmentVariable('Path', "${userPath};${installDir}", 'User')
-        Write-Host "Added $installDir to User PATH. 新しいターミナルを開いてください。"
+        if ($isJa) {
+            Write-Host "$installDir を User PATH に追加しました"
+        } else {
+            Write-Host "Added $installDir to User PATH"
+        }
     }
 
     Write-Host ''
-    Write-Host "Run 'blaze' to get started."
+    if ($isJa) {
+        Write-Host "新規ターミナルを開いて 'blaze' コマンドを実行してください"
+    } else {
+        Write-Host "Open a new terminal and run the 'blaze' command"
+    }
 } finally {
     Remove-Item -Path $tmp -Recurse -Force -ErrorAction SilentlyContinue
 }
